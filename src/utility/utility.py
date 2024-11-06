@@ -7,7 +7,7 @@ from numpy import (
 from numpy.linalg import norm as dis
 
 from math import (
-    sin, cos, acos
+    sin, cos, acos, exp
 )
 
 def rotate90MatUP(array : np, times : int = 1):
@@ -36,11 +36,16 @@ def getPathAngel(path : np) -> float:
 def getPathRadar(path : np) -> float:
     return 0.
 
-def calaTerrainHeight(pos : np, settings : dict) -> float:
-    return 0.
+def calaTerrainHeight(pos : np, settings : np) -> float:
+    x, y, z = pos
+    height = 0.
+    for i in range(settings.shape[0]):
+        xx, yy, xi, yi, h = settings[i]
+        height += h * exp(-((x - xx) / xi) ** 2 - ((y - yy) / yi) ** 2)
+    return height
 
-def checkCollision(pos : np, settings : dict, terrain : np = None) -> bool:
-    x, y, z = pos[0], pos[1], pos[2]
+def checkCollision(pos : np, settings : np, terrain : np = None) -> bool:
+    x, y, z = pos
     if terrain != None:
         if terrain[x, y] > z:
             return True
@@ -54,7 +59,7 @@ def checkCollision(pos : np, settings : dict, terrain : np = None) -> bool:
             return False
         
 def calaSphericPosition(start: np, svector : np) -> np:
-    r, s, p = svector[0], svector[1], svector[2]
+    r, s, p = svector
     vec = np.array([r * sin(s) * cos(p), r * sin(s) * sin(p), r * cos(s)])
     pos = np.add(start, vec)
     return pos

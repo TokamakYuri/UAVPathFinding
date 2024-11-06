@@ -84,3 +84,21 @@ def updateParticlesVelocity(partucles : np, globalbest : particle, options : dic
             partucles[i].pos[j] = np.add(partucles[i].pos[j], partucles[i].vel[j])
     return partucles
     
+def pso(start : np, stop : np, posbound : np, velbound : np, weight : dict, psooption : dict, terrainsettings : dict, terrain : np = None):
+    particlenum = psooption.get('num')
+    step = psooption.get('step')
+    pathnum = psooption.get('pathnum')
+    particles = create(particlenum)
+    globalbest = particle()
+    for i in range(step):
+        if i == 0:
+            particles = initParticles(particles, pathnum, posbound, velbound, start, stop)
+        else:
+            particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, pathnum)
+        particles = updateParticlesPath(particles, start, stop)
+        particles = updateFitness(particles, weight, terrainsettings, terrain)
+        particles = updateLocalBestParticles(particles)
+        globalbest = updateGlobalBestParticles(particles, globalbest)
+        if i % 100 == 0:
+            print(globalbest.bestfitness)
+    return globalbest
