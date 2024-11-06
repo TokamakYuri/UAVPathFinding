@@ -15,7 +15,7 @@ def rotate90MatUP(array : np, times : int = 1):
     zs = np.zeros((max(array.shape) - min(array.shape), max(array.shape)))
     tmp = np.vstack([array, zs])
     tmp = np.rot90(tmp, times)
-    return tmp[:c, :r]
+    return [tmp[:c, :r]]
 
 def getPathLength(path : np) -> float:
     size = path.shape[0]
@@ -40,7 +40,7 @@ def calaTerrainHeight(pos : np, settings : np) -> float:
     x, y, z = pos
     height = 0.
     for i in range(settings.shape[0]):
-        xx, yy, xi, yi, h = settings[i]
+        xx, yy, h, xi, yi = settings[i]
         height += h * exp(-((x - xx) / xi) ** 2 - ((y - yy) / yi) ** 2)
     return height
 
