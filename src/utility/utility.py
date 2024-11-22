@@ -2,7 +2,7 @@ from numpy import pi as PI
 
 import numpy as np
 from numpy import (
-    dot, abs
+    dot, abs, inf
 )
 from numpy.linalg import norm as dis
 
@@ -77,3 +77,18 @@ def calaFitness(path : np, weight: dict, settings : np, terrain : np = None) -> 
         if checkCollision(path[i], settings, terrain):
             return cost * 1000.
     return cost
+
+def calaLengthArray(path : np) -> np:
+    size = path.shape[0]
+    length_array = np.zeros((size, size))
+    for i in range(size):
+        for j in range(size - i):
+            distance = dis(path[i] - path[j])
+            length_array[i][j] = distance
+            length_array[j][i] = distance
+    return length_array
+
+def hamiltonPath(graph : np):
+    size = graph.shape[0]
+    length = inf
+    
