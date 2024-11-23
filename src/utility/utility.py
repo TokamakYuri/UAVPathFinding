@@ -41,7 +41,7 @@ def getPathRadar(path : np, radar : np, radarsettings : dict) -> float:
             distance = dis(path[j] - radar[i])
             if distance <= radarmin:
                 score += 100.
-            elif distance <= 30:
+            elif distance <= radarmax:
                 score += 100. / distance
     return score
 
