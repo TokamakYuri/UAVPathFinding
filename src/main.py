@@ -28,7 +28,7 @@ psooption = {'num' : 20,
              'c2' : 1.5,
              'w' : 0.8}
 
-print(posbound)
+# print(velbound)
 
 psobest = pso.pso(start, stop, posbound, velbound, psooption, peaks, rng=rng)
-print(psobest.bestfitness)
+print(psobest.bestpath)

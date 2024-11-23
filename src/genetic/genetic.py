@@ -1,11 +1,14 @@
-import numpy  as np
+import numpy as np
+from numpy import (
+    inf
+)
 
 import utility.utility as ut
 
 class individual:
-    def __init__(self, ranges) -> None:
+    def __init__(self, pathnum) -> None:
+        self.pos = np.zeros((pathnum, pathnum, pathnum))
+        self.fitness = inf
         
-        self.range = np.array(ranges)
-        self.dimension = self.range.shape[0]
 
         

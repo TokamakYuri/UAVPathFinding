@@ -24,14 +24,18 @@ def getPathLength(path : np) -> float:
         length += dis(path[i + 1] - path[i])
     return length
 
-def getPathAngel(path : np) -> float:
+def getPathAngle(path : np) -> float:
     size = path.shape[0]
-    angel = 0.
+    angle = 0.
     for i in range(size - 2):
         vec_1 = path[i + 1] - path[i]
         vec_2 = path[i + 2] - path[i + 1]
-        angel += acos(dot(vec_1, vec_2)/abs(dis(vec_1) * dis(vec_2))) / PI * 180.
-    return angel
+        try:
+            angle += acos(dot(vec_1, vec_2)/abs(dis(vec_1) * dis(vec_2))) / PI * 180.
+        except:
+            if abs(dis(vec_1) * dis(vec_2)) == 0:
+                angle += 0
+    return angle
 
 def getPathRadar(path : np) -> float:
     return 0.
@@ -66,15 +70,15 @@ def calaSphericPosition(start: np, svector : np) -> np:
 
 def calaCost(path : np, weight : dict) -> float:
     length = getPathLength(path)
-    angel = getPathAngel(path)
+    angle = getPathAngle(path)
     radar = getPathRadar(path)
-    cost = weight.get('l') * length + weight.get('a') * angel + weight.get('r') * radar
+    cost = weight.get('l') * length + weight.get('a') * angle + weight.get('r') * radar
     return cost
 
 def calaFitness(path : np, weight: dict, settings : np, terrain : np = None) -> float:
     cost = calaCost(path, weight)
     for i in range(path.shape[0]):
-        if checkCollision(path[i], settings, terrain):
+        if  checkCollision(path[i], settings, terrain):
             return cost * 1000.
     return cost
 
