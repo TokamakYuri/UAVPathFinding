@@ -14,10 +14,7 @@ def getPathLength(path : np) -> float:
     size = path.shape[0]
     length = 0.
     for i in range(size - 1):
-        if i != size - 1:
-            length += dis(path[i + 1] - path[i])
-        else:
-            length += dis(path[i + 1] - path[i]) * 10.
+        length += dis(path[i + 1] - path[i])
     return length
 
 def getPathAngle(path : np) -> float:

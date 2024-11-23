@@ -4,8 +4,6 @@ import numpy as np
 
 from matplotlib import cm
 from numpy import exp
-from matplotlib.ticker import LinearLocator
-
 
 def terrainMesh(peaks : np, posbound : np):
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})

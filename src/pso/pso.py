@@ -36,7 +36,9 @@ def initParticles(particles : np, pathnum : int, posbound : np, velbound : np, s
         for j in range(3):
             particles[i].pos[j] = rng.uniform(posbound[0][j], posbound[1][j], pathnum)
             particles[i].vel[j] = rng.uniform(velbound[0][j], velbound[1][j], pathnum)
-            particles[i].pos[j] = np.sort(particles[i].pos[j])
+            # particles[i].pos[j] = np.sort(particles[i].pos[j])
+            if i != 2:
+                particles[i].pos[j] = np.sort(particles[i].pos[j])
         particles[i].path = np.array([start])
         arr = np.rot90(particles[i].pos, -1)
         for ele in arr:
@@ -54,8 +56,8 @@ def updateLocalBestParticles(particles : np):
     for i in range(particles.shape[0]):
         if particles[i].bestfitness > particles[i].fitness:
             particles[i].bestfitness = particles[i].fitness
-            particles[i].bestpos = particles[i].pos
-            particles[i].bestpath = particles[i].path
+            particles[i].bestpos = np.copy(particles[i].pos)
+            particles[i].bestpath = np.copy(particles[i].path)
     return particles
 
 def updateParticlesPath(particles : np, start : np, stop : np):
@@ -68,17 +70,16 @@ def updateParticlesPath(particles : np, start : np, stop : np):
         particles[i].path = array
     return particles
 
-def updateParticlesVelocity(particles : np, globalbest : particle, options : dict, velbound : np, posbound : np, pathnum : int, w : int = None):
+def updateParticlesVelocity(particles : np, globalbest : particle, options : dict, velbound : np, posbound : np, pathnum : int, rng : nprng, w : int = None):
     if w == None:
         w = options.get('w')
     c1 = options.get('c1')
     c2 = options.get('c2')
-    rng = nprng.default_rng()
     for i in range(particles.shape[0]):
         for j in range(3):
-            particles[i].vel[j] = w * particles[i].vel[j] + c1 * rng.uniform(velbound[0][j], velbound[1][j], pathnum) * (particles[i].bestpos[j] - particles[i].pos[j]) + c2 * rng.uniform(velbound[0][j], velbound[1][j], pathnum) * (globalbest.bestpos[j] - particles[i].pos[j])
-            particles[i].vel[j] = np.clip(particles[i].vel[j], velbound[0][j], velbound[1][j])
             particles[i].pos[j] = np.clip(np.add(particles[i].pos[j], particles[i].vel[j]), posbound[0][j], posbound[1][j])
+            particles[i].vel[j] = w * particles[i].vel[j] + c1 * rng.uniform(0, 1, pathnum) * (particles[i].bestpos[j] - particles[i].pos[j]) + c2 * rng.uniform(0, 1, pathnum) * (globalbest.bestpos[j] - particles[i].pos[j])
+            particles[i].vel[j] = np.clip(particles[i].vel[j], velbound[0][j], velbound[1][j])
     return particles
     
 def pso(start : np, stop : np, posbound : np, velbound : np, psooption : dict, terrainsettings : dict, terrain : np = None, rng : nprng = rng):
@@ -92,20 +93,18 @@ def pso(start : np, stop : np, posbound : np, velbound : np, psooption : dict, t
         if i == 0:
             particles = initParticles(particles, pathnum, posbound, velbound, start, stop, rng)
         else:
-            particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, posbound, pathnum)
+            particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, posbound, pathnum, rng)
         particles = updateParticlesPath(particles, start, stop)
         particles = updateFitness(particles, weight, terrainsettings, terrain)
         particles = updateLocalBestParticles(particles)
         globalbest = updateGlobalBestParticles(particles, globalbest)
         if i % 100 == 0:
-            string = str(i) + ':' + str(globalbest.bestfitness)
-            print(string)
-            print(particles[0].vel[0])
+            print(str(i) + ':' + str(globalbest.bestfitness))
     return globalbest
 
 def decWeight(weibound : np, gen : int, maxgen : int):
     p = -(gen / maxgen) ** 2 + 1
-    w = weibound[1] + (weibound[1] - weibound[0]) * p
+    w = weibound[0] + (weibound[1] - weibound[0]) * p
     return w
 
 def ldpso(start : np, stop : np, posbound : np, velbound : np, weibound : np, psooption : dict, terrainsettings : dict, terrain : np = None, rng : nprng = rng):
@@ -120,7 +119,7 @@ def ldpso(start : np, stop : np, posbound : np, velbound : np, weibound : np, ps
         if i == 0:
             particles = initParticles(particles, pathnum, posbound, velbound, start, stop, rng)
         else:
-            particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, posbound, pathnum, w=w)
+            particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, posbound, pathnum, rng, w=w)
         particles = updateParticlesPath(particles, start, stop)
         particles = updateFitness(particles, weight, terrainsettings, terrain)
         particles = updateLocalBestParticles(particles)
