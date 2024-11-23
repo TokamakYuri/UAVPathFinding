@@ -23,9 +23,9 @@ def create(num : int) -> np:
         particles = np.append(particles, [particle()], axis = 0)
     return particles
 
-def updateFitness(particles : np, weight : dict, settings : dict, terrain : np = None):
+def updateFitness(particles : np, weight : dict, settings : dict, radar : np, radarsettings : dict, terrain : np = None):
     for i in range(particles.shape[0]):
-        particles[i].fitness = ut.calaFitness(particles[i].path, weight, settings, terrain)
+        particles[i].fitness = ut.calaFitness(particles[i].path, weight, settings, radar, radarsettings, terrain)
     return particles
     
 def initParticles(particles : np, pathnum : int, posbound : np, velbound : np, start : np, stop : np, rng : nprng = rng):
@@ -82,7 +82,7 @@ def updateParticlesVelocity(particles : np, globalbest : particle, options : dic
             particles[i].vel[j] = np.clip(particles[i].vel[j], velbound[0][j], velbound[1][j])
     return particles
     
-def pso(start : np, stop : np, posbound : np, velbound : np, psooption : dict, terrainsettings : dict, terrain : np = None, rng : nprng = rng):
+def pso(start : np, stop : np, posbound : np, velbound : np, psooption : dict, terrainsettings : dict, radar : np, radarsettings : dict, terrain : np = None, rng : nprng = rng):
     particlenum = psooption.get('num')
     step = psooption.get('step')
     pathnum = psooption.get('pathnum')
@@ -95,7 +95,7 @@ def pso(start : np, stop : np, posbound : np, velbound : np, psooption : dict, t
         else:
             particles = updateParticlesVelocity(particles, globalbest, psooption, velbound, posbound, pathnum, rng)
         particles = updateParticlesPath(particles, start, stop)
-        particles = updateFitness(particles, weight, terrainsettings, terrain)
+        particles = updateFitness(particles, weight, terrainsettings, radar, radarsettings, terrain)
         particles = updateLocalBestParticles(particles)
         globalbest = updateGlobalBestParticles(particles, globalbest)
         if i % 100 == 0:
@@ -107,7 +107,7 @@ def decWeight(weibound : np, gen : int, maxgen : int):
     w = weibound[0] + (weibound[1] - weibound[0]) * p
     return w
 
-def ldpso(start : np, stop : np, posbound : np, velbound : np, weibound : np, psooption : dict, terrainsettings : dict, terrain : np = None, rng : nprng = rng):
+def ldpso(start : np, stop : np, posbound : np, velbound : np, weibound : np, psooption : dict, terrainsettings : dict, radar : np, radarsettings : dict, terrain : np = None, rng : nprng = rng):
     particlenum = psooption.get('num')
     step = psooption.get('step')
     pathnum = psooption.get('pathnum')

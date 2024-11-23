@@ -30,8 +30,20 @@ def getPathAngle(path : np) -> float:
                 angle += 0
     return angle
 
-def getPathRadar(path : np) -> float:
-    return 0.
+def getPathRadar(path : np, radar : np, radarsettings : dict) -> float:
+    size = radar.shape[0]
+    pathnum = path.shape[0]
+    score = 0.
+    radarmax = radarsettings.get('max')
+    radarmin = radarsettings.get('min')
+    for i in range(size):
+        for j in range(pathnum):
+            distance = dis(path[j] - radar[i])
+            if distance <= radarmin:
+                score += 100.
+            elif distance <= 30:
+                score += 100. / distance
+    return score
 
 def calaTerrainHeight(pos : np, settings : np) -> float:
     x, y, z = pos
@@ -61,15 +73,15 @@ def calaSphericPosition(start: np, svector : np) -> np:
     pos = np.add(start, vec)
     return pos
 
-def calaCost(path : np, weight : dict) -> float:
+def calaCost(path : np, weight : dict, radar : np, radarsettings : dict) -> float:
     length = getPathLength(path)
     angle = getPathAngle(path)
-    radar = getPathRadar(path)
+    radar = getPathRadar(path, radar, radarsettings)
     cost = weight.get('l') * length + weight.get('a') * angle + weight.get('r') * radar
     return cost
 
-def calaFitness(path : np, weight: dict, settings : np, terrain : np = None) -> float:
-    cost = calaCost(path, weight)
+def calaFitness(path : np, weight: dict, settings : np, radar : np, radarsettings : dict, terrain : np = None) -> float:
+    cost = calaCost(path, weight, radar, radarsettings)
     for i in range(path.shape[0]):
         if checkCollision(path[i], settings, terrain):
             return cost * 1000.
