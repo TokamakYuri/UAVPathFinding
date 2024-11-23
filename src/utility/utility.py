@@ -10,18 +10,14 @@ from math import (
     sin, cos, acos, exp
 )
 
-def rotate90MatUP(array : np, times : int = 1):
-    r, c = array.shape
-    zs = np.zeros((max(array.shape) - min(array.shape), max(array.shape)))
-    tmp = np.vstack([array, zs])
-    tmp = np.rot90(tmp, times)
-    return [tmp[:c, :r]]
-
 def getPathLength(path : np) -> float:
     size = path.shape[0]
     length = 0.
     for i in range(size - 1):
-        length += dis(path[i + 1] - path[i])
+        if i != size - 1:
+            length += dis(path[i + 1] - path[i])
+        else:
+            length += dis(path[i + 1] - path[i]) * 10.
     return length
 
 def getPathAngle(path : np) -> float:
@@ -31,7 +27,7 @@ def getPathAngle(path : np) -> float:
         vec_1 = path[i + 1] - path[i]
         vec_2 = path[i + 2] - path[i + 1]
         try:
-            angle += acos(dot(vec_1, vec_2)/abs(dis(vec_1) * dis(vec_2))) / PI * 180.
+            angle += acos(dot(vec_1, vec_2)/abs(dis(vec_1) * dis(vec_2)))
         except:
             if abs(dis(vec_1) * dis(vec_2)) == 0:
                 angle += 0
@@ -78,7 +74,7 @@ def calaCost(path : np, weight : dict) -> float:
 def calaFitness(path : np, weight: dict, settings : np, terrain : np = None) -> float:
     cost = calaCost(path, weight)
     for i in range(path.shape[0]):
-        if  checkCollision(path[i], settings, terrain):
+        if checkCollision(path[i], settings, terrain):
             return cost * 1000.
     return cost
 
