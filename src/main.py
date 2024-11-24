@@ -33,7 +33,7 @@ stop = np.array([100., 100., 60.])
 psooption = {'num' : 20,
              'step' : 2000,
              'pathnum' : 20,
-             'weight' : {'l' : 0.5, 'r' : 0.3, 'a': 0.2},
+             'weight' : {'l' : 1.0, 'r' : 0.0, 'a': 0.0},
              'c1' : 1.5,
              'c2' : 1.5,
              'w' : 0.8
@@ -41,14 +41,14 @@ psooption = {'num' : 20,
 
 geneoption = {'indinum' : 20,
               'gen' : 2000,
-              'pathnum' : 10,
+              'pathnum' : 20,
               'weight' : {'l' : 1.0, 'r' : 0.0, 'a': 0.0}
 }
 
-# psobest = pso.pso(start, stop, posbound, velbound, psooption, peaks, radar, radarsettings, rng=rng)
-# fig, ax = vs.draw(psobest.bestpath, peaks, posbound, radar, radarsettings)
+psobest = pso.pso(start, stop, posbound, velbound, psooption, peaks, radar, radarsettings, rng=rng)
+fig, ax = vs.draw(psobest.bestpath, peaks, posbound, radar, radarsettings)
 # ldpsobest = pso.ldpso(start, stop, posbound, velbound, weibound, psooption, peaks, radar, radarsettings, rng=rng)
 # fig, ax = vs.draw(ldpsobest.bestpath, peaks, posbound, radar, radarsettings)
-genetic = ge.genetic(start, stop, posbound, geneoption, peaks, radar, radarsettings, rng=rng)
+# genetic = ge.genetic(start, stop, posbound, geneoption, peaks, radar, radarsettings, rng=rng)
 # fig, ax = vs.draw(genetic[0].path, peaks, posbound, radar, radarsettings)
-# plt.show()
+plt.show()

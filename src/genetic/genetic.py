@@ -53,13 +53,13 @@ def sortPopulation(population : np):
     for i in range(size):
         for j in range(size - i - 1):
             if population[i].fitness > population[i + j].fitness:
-                tmp = np.copy(population[i])
-                population[i] = np.copy(population[i + j])
-                population[i + j] = np.copy(tmp)
+                tmp = population[i]
+                population[i] = population[i + j]
+                population[i + j] = tmp
     return population
 
 def selection(population : np, rng=rng):
-    size = population.shape[0]
+    # size = population.shape[0]
     # lm = np.arange(size) / size
     # r = rng.random(size)
     # select = np.less(lm, r)
@@ -102,6 +102,38 @@ def mutation(population : np, posbound : np, rng=rng):
         newpop = np.append(newpop, [indi], axis=0)
     return newpop
         
+def produce(population : np, posbound : np, pathnum : int, rng=rng):
+    try:
+        parent = np.split(population, 2)[0]
+    except:
+        print(1)
+    descendant = np.array([])
+    size = parent.shape[0]
+    for i in range(int(size / 2)):
+        parent_a = parent[i]
+        parent_b = parent[size - i - 1]
+        rand = nprng.randint(pathnum)
+        pos_a = np.hsplit(parent_a.pos, [rand])
+        pos_b = np.hsplit(parent_b.pos, [rand])
+        des_ap = np.hstack((pos_a[0], pos_b[1]))
+        des_bp = np.hstack((pos_b[0], pos_a[1]))
+        des_ap = np.delete(des_ap, nprng.randint(pathnum), 1)
+        des_bp = np.delete(des_bp, nprng.randint(pathnum), 1)
+        mut_ap = np.zeros((3, 1))
+        mut_bp = np.zeros((3, 1))
+        for j in range(3):
+            mut_ap[j] = rng.uniform(posbound[0][j], posbound[1][j])
+            mut_bp[j] = rng.uniform(posbound[0][j], posbound[1][j])
+        des_ap = np.sort(np.hstack((des_ap, mut_ap)))
+        des_bp = np.sort(np.hstack((des_bp, mut_bp)))
+        des_a = individual(pathnum)
+        des_b = individual(pathnum)
+        des_a.pos = des_ap
+        des_b.pos = des_bp
+        descendant = np.append(descendant, [des_a, des_b], axis=0)
+    newpop = np.append(parent, descendant)
+    return newpop
+
 def genetic(start : np, stop : np, posbound : np, geneoptions : dict, terrainsettings : dict, radar : np, radarsettings : dict, terrain : np = None, rng : nprng = rng):
     indinum = geneoptions.get('indinum')
     gen = geneoptions.get('gen')
@@ -113,9 +145,11 @@ def genetic(start : np, stop : np, posbound : np, geneoptions : dict, terrainset
             initPopulation(populations, pathnum, posbound, start, stop, rng)
         populations = updatePopulationPath(populations, start, stop)
         populations = updateFitness(populations, weight, terrainsettings, radar, radarsettings)
-        populations = selection(populations, rng)
-        populations = crossover(populations)
-        populations = mutation(populations, posbound, rng)
-        # if i % 100 == 0:
-        print(str(i) + ':' + str(populations[0].fitness))
+        populations = sortPopulation(populations)
+        populations = produce(populations, posbound, pathnum, rng)
+        # populations = selection(populations, rng)
+        # populations = crossover(populations)
+        # populations = mutation(populations, posbound, rng)
+        if i % 100 == 0:
+            print(str(i) + ':' + str(populations[0].fitness))
     return populations
