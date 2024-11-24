@@ -29,10 +29,10 @@ radarsettings = {'max' : 30,
 start = np.array([0., 0., 10.])
 stop = np.array([100., 100., 60.])
 
-psooption = {'num' : 10,
+psooption = {'num' : 20,
              'step' : 2000,
              'pathnum' : 20,
-             'weight' : {'l' : 1.0, 'r' : 0.3, 'a': 0.0},
+             'weight' : {'l' : 0.5, 'r' : 0.3, 'a': 0.2},
              'c1' : 1.5,
              'c2' : 1.5,
              'w' : 0.8}
