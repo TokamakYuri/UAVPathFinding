@@ -101,3 +101,5 @@ def hamiltonPath(graph : np):
     size = graph.shape[0]
     length = inf
     
+def sigmoid(z):
+    return 1 / (1 + exp(-z))

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from utility import utility as ut
 from pso import pso
 from visual import visual as vs
+from genetic import genetic as ge
 
 rng = nprng.default_rng()
 
@@ -35,10 +36,19 @@ psooption = {'num' : 20,
              'weight' : {'l' : 0.5, 'r' : 0.3, 'a': 0.2},
              'c1' : 1.5,
              'c2' : 1.5,
-             'w' : 0.8}
+             'w' : 0.8
+}
 
-psobest = pso.pso(start, stop, posbound, velbound, psooption, peaks, radar, radarsettings, rng=rng)
-fig, ax = vs.draw(psobest.bestpath, peaks, posbound, radar, radarsettings)
-# ldpsobest = pso.ldpso(start, stop, posbound, velbound, weibound, psooption, peaks, rng=rng)
+geneoption = {'indinum' : 20,
+              'gen' : 2000,
+              'pathnum' : 10,
+              'weight' : {'l' : 1.0, 'r' : 0.0, 'a': 0.0}
+}
+
+# psobest = pso.pso(start, stop, posbound, velbound, psooption, peaks, radar, radarsettings, rng=rng)
+# fig, ax = vs.draw(psobest.bestpath, peaks, posbound, radar, radarsettings)
+# ldpsobest = pso.ldpso(start, stop, posbound, velbound, weibound, psooption, peaks, radar, radarsettings, rng=rng)
 # fig, ax = vs.draw(ldpsobest.bestpath, peaks, posbound, radar, radarsettings)
-plt.show()
+genetic = ge.genetic(start, stop, posbound, geneoption, peaks, radar, radarsettings, rng=rng)
+# fig, ax = vs.draw(genetic[0].path, peaks, posbound, radar, radarsettings)
+# plt.show()
